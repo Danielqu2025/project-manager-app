@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>项目管理中心</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mui/material@5.15.3/dist/mui.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
@@ -13,6 +12,7 @@
     .header h1 { font-size: 28px; font-weight: 600; }
     .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px; }
     .btn-primary { background: #1976d2; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
     .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
@@ -25,7 +25,7 @@
     .badge-green { background: #10B981; }
     .badge-gray { background: #6B7280; }
     .progress-bar { background: #e0e0e0; border-radius: 4px; height: 8px; margin: 12px 0; }
-    .progress-fill { background: #1976d2; border-radius: 4px; height: 100%; }
+    .progress-fill { background: #1976d2; border-radius: 4px; height: 100%; transition: width 0.3s; }
     .info-row { display: flex; justify-content: space-between; margin-top: 12px; font-size: 14px; color: #666; }
     .risk-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: white; margin-top: 12px; }
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
@@ -33,14 +33,30 @@
     .stat-num { font-size: 32px; font-weight: 600; color: #1976d2; }
     .stat-label { font-size: 14px; color: #666; margin-top: 4px; }
     .loading { text-align: center; padding: 40px; color: #666; }
+    .error { background: #fee2e2; border: 1px solid #fecaca; color: #dc2626; padding: 12px; border-radius: 6px; margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 4px; font-weight: 500; }
+    .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; padding: 24px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
+    .form-actions { display: flex; gap: 8px; justify-content: flex-end; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h1>🏗️ 项目管理中心</h1>
-      <button class="btn btn-primary" onclick="location.reload()">🔄 刷新</button>
+      <div>
+        <button class="btn btn-primary" onclick="showModal()">+ 新建项目</button>
+        <button class="btn btn-danger" onclick="loadProjects()">🔄 刷新</button>
+      </div>
     </div>
+    
+    <div id="errorMsg" style="display:none;"></div>
+    
     <div class="stats">
       <div class="stat-card"><div class="stat-num" id="totalProjects">-</div><div class="stat-label">总项目数</div></div>
       <div class="stat-card"><div class="stat-num" id="totalBudget">-</div><div class="stat-label">总预算(万)</div></div>
@@ -49,21 +65,262 @@
     </div>
     <div class="grid" id="projectList"><div class="loading">加载中...</div></div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const supabase = window.supabase.createClient('https://ymrhorxtglbsoccpxnwv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltcmhvcnh0Z2xic29jY3B4bnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTgxNjUsImV4cCI6MjA4OTc5NDE2NX0.wav36aWORPcWOhX33ga73puQf3b3ofxHbXD2vB6myoA');
-    const statusColors = {'在研':'badge-blue','设计深化中':'badge-purple','招标中':'badge-yellow','方案设计中':'badge-green','施工中':'badge-green','已完成':'badge-gray'};
+
+  <!-- 新建项目弹窗 -->
+  <div class="modal" id="projectModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">新建项目</h2>
+        <button class="modal-close" onclick="hideModal()">×</button>
+      </div>
+      <form id="projectForm" onsubmit="saveProject(event)">
+        <input type="hidden" id="projectId">
+        <div class="form-group">
+          <label>项目名称 *</label>
+          <input type="text" id="projectName" required>
+        </div>
+        <div class="form-group">
+          <label>项目地址</label>
+          <input type="text" id="projectAddress">
+        </div>
+        <div class="form-group">
+          <label>预算 (元)</label>
+          <input type="number" id="projectBudget">
+        </div>
+        <div class="form-group">
+          <label>项目类型</label>
+          <select id="projectType">
+            <option value="">请选择</option>
+            <option value="房建">房建</option>
+            <option value="市政">市政</option>
+            <option value="装饰装修">装饰装修</option>
+            <option value="智能化">智能化</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>实施方式</label>
+          <select id="implementType">
+            <option value="">请选择</option>
+            <option value="工程总承包（EPC）">工程总承包（EPC）</option>
+            <option value="平行发包">平行发包</option>
+            <option value="施工总承包">施工总承包</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>状态</label>
+          <select id="projectStatus">
+            <option value="在研">在研</option>
+            <option value="设计深化中">设计深化中</option>
+            <option value="招标中">招标中</option>
+            <option value="方案设计中">方案设计中</option>
+            <option value="施工中">施工中</option>
+            <option value="已完成">已完成</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>风险等级</label>
+          <select id="riskLevel">
+            <option value="低">低</option>
+            <option value="中">中</option>
+            <option value="高">高</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>计划完工日期</label>
+          <input type="date" id="plannedEndDate">
+        </div>
+        <div class="form-group">
+          <label>备注</label>
+          <input type="text" id="projectRemarks">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn" onclick="hideModal()">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    // Supabase 配置
+    const SUPABASE_URL = 'https://ymrhorxtglbsoccpxnwv.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltcmhvcnh0Z2xic29jY3B4bnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTgxNjUsImV4cCI6MjA4OTc5NDE2NX0.wav36aWORPcWOhX33ga73puQf3b3ofxHbXD2vB6myoA';
+    
+    // 使用 fetch 直接调用 REST API，绕过 JS 客户端
+    const headers = {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    };
+
+    const statusColors = {
+      '在研': 'badge-blue',
+      '设计深化中': 'badge-purple',
+      '招标中': 'badge-yellow',
+      '方案设计中': 'badge-green',
+      '施工中': 'badge-green',
+      '已完成': 'badge-gray',
+    };
+
     const riskColors = {'高':'#DC2626','中':'#F59E0B','低':'#10B981'};
-    async function loadProjects() {
-      const { data: projects } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
-      const total = projects?.length || 0, budget = (projects?.reduce((s,p) => s+(p.budget||0),0)||0)/10000, progress = projects?.reduce((s,p)=>s+(p.progress||0),0)/(total||1)||0, highRisk = projects?.filter(p=>p.risk_level==='高').length||0;
-      document.getElementById('totalProjects').textContent = total;
-      document.getElementById('totalBudget').textContent = Math.round(budget);
-      document.getElementById('avgProgress').textContent = Math.round(progress)+'%';
-      document.getElementById('highRisk').textContent = highRisk;
-      if(!projects||!projects.length){document.getElementById('projectList').innerHTML='<div class="loading">暂无项目</div>';return;}
-      document.getElementById('projectList').innerHTML = projects.map(p=>`<div class="card"><div class="card-header"><div class="card-title">${p.name}</div><span class="badge ${statusColors[p.status]||'badge-gray'}">${p.status||'待定'}</span></div><div style="color:#666;font-size:14px;margin-bottom:12px;">📍 ${p.address||'地址待定'}</div><div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:14px;">进度</span><span style="font-size:14px;font-weight:600;">${p.progress||0}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p.progress||0}%"></div></div></div><div class="info-row"><span>💰 预算: ¥${(p.budget||0).toLocaleString()}</span><span>📅 完工: ${p.planned_end_date||'待定'}</span></div><div class="risk-badge" style="background:${riskColors[p.risk_level]||riskColors['低']}">风险: ${p.risk_level||'低'}</div></div>`).join('');
-    }
+
+    window.loadProjects = async function() {
+      try {
+        document.getElementById('projectList').innerHTML = '<div class="loading">加载中...</div>';
+        document.getElementById('errorMsg').style.display = 'none';
+        
+        const response = await fetch(SUPABASE_URL + '/rest/v1/projects?select=*&order=created_at.desc', { headers });
+        
+        if (!response.ok) {
+          throw new Error('请求失败: ' + response.status);
+        }
+        
+        const projects = await response.json();
+        
+        const total = projects?.length || 0;
+        const budget = (projects?.reduce((s,p) => s+(p.budget||0),0)||0)/10000;
+        const progress = projects?.reduce((s,p)=>s+(p.progress||0),0)/(total||1)||0;
+        const highRisk = projects?.filter(p=>p.risk_level==='高').length||0;
+        
+        document.getElementById('totalProjects').textContent = total;
+        document.getElementById('totalBudget').textContent = Math.round(budget);
+        document.getElementById('avgProgress').textContent = Math.round(progress)+'%';
+        document.getElementById('highRisk').textContent = highRisk;
+        
+        if(!projects || !projects.length){
+          document.getElementById('projectList').innerHTML = '<div class="loading">暂无项目，点击"新建项目"创建</div>';
+          return;
+        }
+        
+        document.getElementById('projectList').innerHTML = projects.map(p => `
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">${p.name}</div>
+              <span class="badge ${statusColors[p.status]||'badge-gray'}">${p.status||'待定'}</span>
+            </div>
+            <div style="color:#666;font-size:14px;margin-bottom:12px;">📍 ${p.address||'地址待定'}</div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:14px;">进度</span>
+                <span style="font-size:14px;font-weight:600;">${p.progress||0}%</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${p.progress||0}%"></div></div>
+            </div>
+            <div class="info-row">
+              <span>💰 预算: ¥${(p.budget||0).toLocaleString()}</span>
+              <span>📅 完工: ${p.planned_end_date||'待定'}</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <div class="risk-badge" style="background:${riskColors[p.risk_level]||riskColors['低']}">风险: ${p.risk_level||'低'}</div>
+              <button class="btn" style="padding:4px 8px;font-size:12px;" onclick="editProject('${p.id}')">编辑</button>
+              <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="deleteProject('${p.id}')">删除</button>
+            </div>
+          </div>
+        `).join('');
+        
+      } catch (err) {
+        document.getElementById('errorMsg').innerHTML = '<div class="error">加载失败: ' + err.message + '</div>';
+        document.getElementById('errorMsg').style.display = 'block';
+        document.getElementById('projectList').innerHTML = '<div class="loading">加载失败，请点击刷新重试</div>';
+      }
+    };
+
+    window.showModal = function() {
+      document.getElementById('projectForm').reset();
+      document.getElementById('projectId').value = '';
+      document.getElementById('modalTitle').textContent = '新建项目';
+      document.getElementById('projectModal').classList.add('active');
+    };
+
+    window.hideModal = function() {
+      document.getElementById('projectModal').classList.remove('active');
+    };
+
+    window.editProject = async function(id) {
+      const response = await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + id, { headers });
+      const projects = await response.json();
+      if (projects && projects[0]) {
+        const p = projects[0];
+        document.getElementById('projectId').value = p.id;
+        document.getElementById('projectName').value = p.name || '';
+        document.getElementById('projectAddress').value = p.address || '';
+        document.getElementById('projectBudget').value = p.budget || '';
+        document.getElementById('projectType').value = p.project_type || '';
+        document.getElementById('implementType').value = p.implement_type || '';
+        document.getElementById('projectStatus').value = p.status || '在研';
+        document.getElementById('riskLevel').value = p.risk_level || '低';
+        document.getElementById('plannedEndDate').value = p.planned_end_date || '';
+        document.getElementById('projectRemarks').value = p.remarks || '';
+        document.getElementById('modalTitle').textContent = '编辑项目';
+        document.getElementById('projectModal').classList.add('active');
+      }
+    };
+
+    window.saveProject = async function(e) {
+      e.preventDefault();
+      const id = document.getElementById('projectId').value;
+      const data = {
+        name: document.getElementById('projectName').value,
+        address: document.getElementById('projectAddress').value,
+        budget: parseFloat(document.getElementById('projectBudget').value) || null,
+        project_type: document.getElementById('projectType').value || null,
+        implement_type: document.getElementById('implementType').value || null,
+        status: document.getElementById('projectStatus').value,
+        risk_level: document.getElementById('riskLevel').value,
+        planned_end_date: document.getElementById('plannedEndDate').value || null,
+        remarks: document.getElementById('projectRemarks').value || null,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        let url = SUPABASE_URL + '/rest/v1/projects';
+        let method = 'POST';
+        
+        if (id) {
+          url += '?id=eq.' + id;
+          method = 'PATCH';
+        }
+        
+        const response = await fetch(url, {
+          method: method,
+          headers: headers,
+          body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+          const err = await response.text();
+          throw new Error(err);
+        }
+        
+        hideModal();
+        loadProjects();
+      } catch (err) {
+        alert('保存失败: ' + err.message);
+      }
+    };
+
+    window.deleteProject = async function(id) {
+      if (!confirm('确定要删除这个项目吗？')) return;
+      
+      try {
+        const response = await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + id, {
+          method: 'DELETE',
+          headers: headers
+        });
+        
+        if (!response.ok) {
+          throw new Error('删除失败');
+        }
+        
+        loadProjects();
+      } catch (err) {
+        alert('删除失败: ' + err.message);
+      }
+    };
+
+    // 初始化加载
     loadProjects();
   </script>
 </body>
