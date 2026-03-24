@@ -303,6 +303,69 @@ async function editRisk(id){let r=await fetch(URL+"/rest/v1/risks?id=eq."+id,{he
 async function saveRisk(e){e.preventDefault();let id=document.getElementById("riskId").value;let d={project_id:document.getElementById("riskProjectId").value,risk_name:document.getElementById("riskName").value,risk_level:document.getElementById("riskLevel2").value,status:document.getElementById("riskStatus").value,mitigation:document.getElementById("riskMitigation").value||null};let u=URL+"/rest/v1/risks";if(id)u+="?id=eq."+id;await fetch(u,{method:id?"PATCH":"POST",headers:H,body:JSON.stringify(d)});hideModal("risk");loadRisks();}
 async function delRisk(id){if(confirm("确定删除？")){await fetch(URL+"/rest/v1/risks?id=eq."+id,{method:"DELETE",headers:H});loadRisks();}}
 
+
+// Excel Import
+async function importExcel(){
+  let f=document.getElementById("excelFile").files[0];
+  if(!f){alert("请选择文件");return}
+  let r=new FileReader();
+  r.onload=async function(e){
+    try{
+      let data=new Uint8Array(e.target.result);
+      let wb=XLSX.read(data,{type:"array"});
+      let ws=wb.Sheets[wb.SheetNames[0]];
+      let json=XLSX.utils.sheet_to_json(ws);
+      for(let row of json){
+        let p={
+          name:row["项目名称"]||row["name"]||"",
+          budget:parseFloat(row["预算"]||row["budget"])||0,
+          address:row["地址"]||row["address"]||"",
+          status:row["状态"]||row["status"]||"在研",
+          risk_level:row["风险等级"]||row["risk_level"]||"低",
+          project_type:row["类型"]||row["type"]||"房建",
+          created_at:new Date().toISOString()
+        };
+        if(p.name){
+          await fetch(URL+"/rest/v1/projects",{method:"POST",headers:H,body:JSON.stringify(p)});
+        }
+      }
+      alert("导入成功！");
+      loadProjects();
+    }catch(err){alert("导入失败: "+err.message);}
+  };
+  r.readAsArrayBuffer(f);
+}
+
+async function importCSV(){
+  let f=document.getElementById("csvFile").files[0];
+  if(!f){alert("请选择文件");return}
+  let r=new FileReader();
+  r.onload=async function(e){
+    try{
+      let text=e.target.result;
+      let lines=text.split("\n").filter(l=>l.trim());
+      for(let i=1;i<lines.length;i++){
+        let cols=lines[i].split(",").map(c=>c.trim());
+        if(cols[0]){
+          let p={
+            name:cols[0],
+            budget:parseFloat(cols[1])||0,
+            address:cols[2]||"",
+            status:cols[3]||"在研",
+            risk_level:cols[4]||"低",
+            project_type:cols[5]||"房建",
+            created_at:new Date().toISOString()
+          };
+          await fetch(URL+"/rest/v1/projects",{method:"POST",headers:H,body:JSON.stringify(p)});
+        }
+      }
+      alert("导入成功！");
+      loadProjects();
+    }catch(err){alert("导入失败: "+err.message);}
+  };
+  r.readAsText(f);
+}
+
 // Init
 loadConfig().then(()=>loadAll());
 </script>
