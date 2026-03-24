@@ -53,6 +53,7 @@ body{background:#f3f4f6;min-height:100vh}
 <div class="nav-item" onclick="switchTab('contracts')">📄 合同</div>
 <div class="nav-item" onclick="switchTab('expenses')">💰 费用</div>
 <div class="nav-item" onclick="switchTab('risks')">⚠️ 风险</div>
+<div class="nav-item" onclick="switchTab('import')">📥 导入</div>
 </div>
 <div class="content" style="flex:1">
 <div id="tab-dashboard" class="tab active">
@@ -80,6 +81,11 @@ body{background:#f3f4f6;min-height:100vh}
 <div id="tab-expenses" class="tab">
 <div class="d-flex justify-content-between align-items-center mb-2"><h6>💰 费用明细</h6><button class="btn btn-success btn-sm" onclick="showModal('expense')">+ 添加</button></div>
 <div class="card"><table class="table"><thead><tr><th>名称</th><th>项目</th><th>金额</th><th>付款</th><th>操作</th></tr></thead><tbody id="expenseList"></tbody></table></div>
+</div>
+<div id="tab-import" class="tab">
+<div class="d-flex justify-content-between align-items-center mb-2"><h6>📥 数据导入</h6></div>
+<div class="card mb-3"><h6 class="mb-3">📥 Excel 导入项目</h6><p class="text-muted small mb-2">请确保 Excel 包含表头：项目名称,预算,地址,状态,风险等级,类型</p><input type="file" id="excelFile" class="form-control mb-2" accept=".xlsx,.xls,.csv"><button class="btn btn-primary btn-sm" onclick="importExcel()">导入项目</button></div>
+<div class="card"><h6 class="mb-3">📥 CSV 导入项目</h6><p class="text-muted small mb-2">CSV 格式：名称,预算,地址,状态,风险等级,类型</p><input type="file" id="csvFile" class="form-control mb-2" accept=".csv"><button class="btn btn-success btn-sm" onclick="importCSV()">导入 CSV</button></div>
 </div>
 <div id="tab-risks" class="tab">
 <div class="d-flex justify-content-between align-items-center mb-2"><h6>⚠️ 风险记录</h6><button class="btn btn-success btn-sm" onclick="showModal('risk')">+ 添加</button></div>
@@ -153,6 +159,7 @@ body{background:#f3f4f6;min-height:100vh}
 <div class="text-end"><button class="btn btn-success btn-sm" onclick="saveConfig()">保存</button></div>
 </div></div></div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 const URL="https://ymrhorxtglbsoccpxnwv.supabase.co";
 const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltcmhvcnh0Z2xic29jY3B4bnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTgxNjUsImV4cCI6MjA4OTc5NDE2NX0.wav36aWORPcWOhX33ga73puQf3b3ofxHbXD2vB6myoA";
