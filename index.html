@@ -13,6 +13,7 @@
     .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px; }
     .btn-primary { background: #1976d2; color: white; }
     .btn-danger { background: #dc2626; color: white; }
+    .btn-secondary { background: #6b7280; color: white; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
     .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
@@ -43,111 +44,204 @@
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
     .form-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    
+    /* 登录页面样式 */
+    .login-page { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      min-height: 100vh; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    }
+    .login-box { 
+      background: white; 
+      padding: 40px; 
+      border-radius: 12px; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+      width: 360px; 
+      text-align: center;
+    }
+    .login-box h1 { font-size: 24px; margin-bottom: 8px; color: #333; }
+    .login-box p { color: #666; margin-bottom: 24px; }
+    .login-box input { 
+      width: 100%; 
+      padding: 12px; 
+      border: 2px solid #e0e0e0; 
+      border-radius: 8px; 
+      font-size: 16px; 
+      margin-bottom: 16px; 
+      transition: border-color 0.3s;
+    }
+    .login-box input:focus { outline: none; border-color: #667eea; }
+    .login-box .btn { width: 100%; padding: 12px; font-size: 16px; }
+    .login-box .error { text-align: left; margin-bottom: 12px; }
+    .login-logo { font-size: 48px; margin-bottom: 16px; }
+    
+    .app-content { display: none; }
+    .app-content.active { display: block; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>🏗️ 项目管理中心</h1>
-      <div>
-        <button class="btn btn-primary" onclick="showModal()">+ 新建项目</button>
-        <button class="btn btn-danger" onclick="loadProjects()">🔄 刷新</button>
-      </div>
-    </div>
-    
-    <div id="errorMsg" style="display:none;"></div>
-    
-    <div class="stats">
-      <div class="stat-card"><div class="stat-num" id="totalProjects">-</div><div class="stat-label">总项目数</div></div>
-      <div class="stat-card"><div class="stat-num" id="totalBudget">-</div><div class="stat-label">总预算(万)</div></div>
-      <div class="stat-card"><div class="stat-num" id="avgProgress">-</div><div class="stat-label">平均进度</div></div>
-      <div class="stat-card"><div class="stat-num" id="highRisk">-</div><div class="stat-label">高风险项目</div></div>
-    </div>
-    <div class="grid" id="projectList"><div class="loading">加载中...</div></div>
-  </div>
-
-  <!-- 新建项目弹窗 -->
-  <div class="modal" id="projectModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="modalTitle">新建项目</h2>
-        <button class="modal-close" onclick="hideModal()">×</button>
-      </div>
-      <form id="projectForm" onsubmit="saveProject(event)">
-        <input type="hidden" id="projectId">
-        <div class="form-group">
-          <label>项目名称 *</label>
-          <input type="text" id="projectName" required>
-        </div>
-        <div class="form-group">
-          <label>项目地址</label>
-          <input type="text" id="projectAddress">
-        </div>
-        <div class="form-group">
-          <label>预算 (元)</label>
-          <input type="number" id="projectBudget">
-        </div>
-        <div class="form-group">
-          <label>项目类型</label>
-          <select id="projectType">
-            <option value="">请选择</option>
-            <option value="房建">房建</option>
-            <option value="市政">市政</option>
-            <option value="装饰装修">装饰装修</option>
-            <option value="智能化">智能化</option>
-            <option value="其他">其他</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>实施方式</label>
-          <select id="implementType">
-            <option value="">请选择</option>
-            <option value="工程总承包（EPC）">工程总承包（EPC）</option>
-            <option value="平行发包">平行发包</option>
-            <option value="施工总承包">施工总承包</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>状态</label>
-          <select id="projectStatus">
-            <option value="在研">在研</option>
-            <option value="设计深化中">设计深化中</option>
-            <option value="招标中">招标中</option>
-            <option value="方案设计中">方案设计中</option>
-            <option value="施工中">施工中</option>
-            <option value="已完成">已完成</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>风险等级</label>
-          <select id="riskLevel">
-            <option value="低">低</option>
-            <option value="中">中</option>
-            <option value="高">高</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>计划完工日期</label>
-          <input type="date" id="plannedEndDate">
-        </div>
-        <div class="form-group">
-          <label>备注</label>
-          <input type="text" id="projectRemarks">
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn" onclick="hideModal()">取消</button>
-          <button type="submit" class="btn btn-primary">保存</button>
-        </div>
+  <!-- 登录页面 -->
+  <div class="login-page" id="loginPage">
+    <div class="login-box">
+      <div class="login-logo">🏗️</div>
+      <h1>项目管理中心</h1>
+      <p>请输入访问密码</p>
+      <div id="loginError" class="error" style="display:none;"></div>
+      <form onsubmit="doLogin(event)">
+        <input type="password" id="password" placeholder="请输入密码" required>
+        <button type="submit" class="btn btn-primary">登 录</button>
       </form>
+      <p style="margin-top: 16px; font-size: 12px; color: #999;">忘记密码请联系管理员</p>
     </div>
   </div>
 
-  <script type="module">
-    // Supabase 配置
+  <!-- 应用内容 -->
+  <div class="app-content" id="appContent">
+    <div class="container">
+      <div class="header">
+        <h1>🏗️ 项目管理中心</h1>
+        <div>
+          <button class="btn btn-primary" onclick="showModal()">+ 新建项目</button>
+          <button class="btn btn-secondary" onclick="logout()">退出登录</button>
+        </div>
+      </div>
+      
+      <div id="errorMsg" style="display:none;"></div>
+      
+      <div class="stats">
+        <div class="stat-card"><div class="stat-num" id="totalProjects">-</div><div class="stat-label">总项目数</div></div>
+        <div class="stat-card"><div class="stat-num" id="totalBudget">-</div><div class="stat-label">总预算(万)</div></div>
+        <div class="stat-card"><div class="stat-num" id="avgProgress">-</div><div class="stat-label">平均进度</div></div>
+        <div class="stat-card"><div class="stat-num" id="highRisk">-</div><div class="stat-label">高风险项目</div></div>
+      </div>
+      <div class="grid" id="projectList"><div class="loading">加载中...</div></div>
+    </div>
+
+    <!-- 新建项目弹窗 -->
+    <div class="modal" id="projectModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">新建项目</h2>
+          <button class="modal-close" onclick="hideModal()">×</button>
+        </div>
+        <form id="projectForm" onsubmit="saveProject(event)">
+          <input type="hidden" id="projectId">
+          <div class="form-group">
+            <label>项目名称 *</label>
+            <input type="text" id="projectName" required>
+          </div>
+          <div class="form-group">
+            <label>项目地址</label>
+            <input type="text" id="projectAddress">
+          </div>
+          <div class="form-group">
+            <label>预算 (元)</label>
+            <input type="number" id="projectBudget">
+          </div>
+          <div class="form-group">
+            <label>项目类型</label>
+            <select id="projectType">
+              <option value="">请选择</option>
+              <option value="房建">房建</option>
+              <option value="市政">市政</option>
+              <option value="装饰装修">装饰装修</option>
+              <option value="智能化">智能化</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>实施方式</label>
+            <select id="implementType">
+              <option value="">请选择</option>
+              <option value="工程总承包（EPC）">工程总承包（EPC）</option>
+              <option value="平行发包">平行发包</option>
+              <option value="施工总承包">施工总承包</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>状态</label>
+            <select id="projectStatus">
+              <option value="在研">在研</option>
+              <option value="设计深化中">设计深化中</option>
+              <option value="招标中">招标中</option>
+              <option value="方案设计中">方案设计中</option>
+              <option value="施工中">施工中</option>
+              <option value="已完成">已完成</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>风险等级</label>
+            <select id="riskLevel">
+              <option value="低">低</option>
+              <option value="中">中</option>
+              <option value="高">高</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>计划完工日期</label>
+            <input type="date" id="plannedEndDate">
+          </div>
+          <div class="form-group">
+            <label>备注</label>
+            <input type="text" id="projectRemarks">
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn" onclick="hideModal()">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 登录配置 ==========
+    // 密码: admin123 (可以修改)
+    const CORRECT_PASSWORD = 'admin123';
+    
+    // ========== 检查登录状态 ==========
+    function checkLogin() {
+      const isLoggedIn = localStorage.getItem('pm_logged_in');
+      if (isLoggedIn === 'true') {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('appContent').classList.add('active');
+        loadProjects();
+      }
+    }
+    
+    // ========== 登录 ==========
+    function doLogin(e) {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('loginError');
+      
+      if (password === CORRECT_PASSWORD) {
+        localStorage.setItem('pm_logged_in', 'true');
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('appContent').classList.add('active');
+        loadProjects();
+      } else {
+        errorDiv.textContent = '密码错误，请重试';
+        errorDiv.style.display = 'block';
+        document.getElementById('password').value = '';
+      }
+    }
+    
+    // ========== 退出登录 ==========
+    function logout() {
+      localStorage.removeItem('pm_logged_in');
+      document.getElementById('appContent').classList.remove('active');
+      document.getElementById('loginPage').style.display = 'flex';
+      document.getElementById('password').value = '';
+      document.getElementById('loginError').style.display = 'none';
+    }
+
+    // ========== Supabase 配置 ==========
     const SUPABASE_URL = 'https://ymrhorxtglbsoccpxnwv.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltcmhvcnh0Z2xic29jY3B4bnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTgxNjUsImV4cCI6MjA4OTc5NDE2NX0.wav36aWORPcWOhX33ga73puQf3b3ofxHbXD2vB6myoA';
     
-    // 使用 fetch 直接调用 REST API，绕过 JS 客户端
     const headers = {
       'apikey': SUPABASE_KEY,
       'Authorization': 'Bearer ' + SUPABASE_KEY,
@@ -320,8 +414,8 @@
       }
     };
 
-    // 初始化加载
-    loadProjects();
+    // 初始化
+    checkLogin();
   </script>
 </body>
 </html>
