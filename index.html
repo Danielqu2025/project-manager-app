@@ -14,6 +14,7 @@
     .btn-primary { background: #1976d2; color: white; }
     .btn-danger { background: #dc2626; color: white; }
     .btn-secondary { background: #6b7280; color: white; }
+    .btn-success { background: #10b981; color: white; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
     .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
@@ -35,43 +36,24 @@
     .stat-label { font-size: 14px; color: #666; margin-top: 4px; }
     .loading { text-align: center; padding: 40px; color: #666; }
     .error { background: #fee2e2; border: 1px solid #fecaca; color: #dc2626; padding: 12px; border-radius: 6px; margin-bottom: 16px; }
+    .success { background: #d1fae5; border: 1px solid #a7f3d0; color: #065f46; padding: 12px; border-radius: 6px; margin-bottom: 16px; }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; margin-bottom: 4px; font-weight: 500; }
-    .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
     .modal.active { display: flex; }
-    .modal-content { background: white; padding: 24px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal-content { background: white; padding: 24px; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
-    .form-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
     
     /* 登录页面样式 */
-    .login-page { 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      min-height: 100vh; 
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-    }
-    .login-box { 
-      background: white; 
-      padding: 40px; 
-      border-radius: 12px; 
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
-      width: 360px; 
-      text-align: center;
-    }
+    .login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 360px; text-align: center; }
     .login-box h1 { font-size: 24px; margin-bottom: 8px; color: #333; }
     .login-box p { color: #666; margin-bottom: 24px; }
-    .login-box input { 
-      width: 100%; 
-      padding: 12px; 
-      border: 2px solid #e0e0e0; 
-      border-radius: 8px; 
-      font-size: 16px; 
-      margin-bottom: 16px; 
-      transition: border-color 0.3s;
-    }
+    .login-box input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; margin-bottom: 16px; transition: border-color 0.3s; }
     .login-box input:focus { outline: none; border-color: #667eea; }
     .login-box .btn { width: 100%; padding: 12px; font-size: 16px; }
     .login-box .error { text-align: left; margin-bottom: 12px; }
@@ -79,6 +61,16 @@
     
     .app-content { display: none; }
     .app-content.active { display: block; }
+    
+    .tab-buttons { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
+    .tab-btn { padding: 8px 16px; border: none; background: none; cursor: pointer; font-size: 14px; color: #666; border-radius: 6px; }
+    .tab-btn.active { background: #e0e0e0; color: #333; font-weight: 500; }
+    
+    .config-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 16px; }
+    .config-section h3 { margin-bottom: 12px; font-size: 16px; }
+    .config-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .config-item input { flex: 1; }
+    .config-item .remove-btn { background: #fee2e2; color: #dc2626; padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -93,7 +85,6 @@
         <input type="password" id="password" placeholder="请输入密码" required>
         <button type="submit" class="btn btn-primary">登 录</button>
       </form>
-      <p style="margin-top: 16px; font-size: 12px; color: #999;">忘记密码请联系管理员</p>
     </div>
   </div>
 
@@ -104,11 +95,13 @@
         <h1>🏗️ 项目管理中心</h1>
         <div>
           <button class="btn btn-primary" onclick="showModal()">+ 新建项目</button>
-          <button class="btn btn-secondary" onclick="logout()">退出登录</button>
+          <button class="btn btn-secondary" onclick="showConfigModal()">⚙️ 配置</button>
+          <button class="btn btn-danger" onclick="logout()">退出</button>
         </div>
       </div>
       
       <div id="errorMsg" style="display:none;"></div>
+      <div id="successMsg" style="display:none;"></div>
       
       <div class="stats">
         <div class="stat-card"><div class="stat-num" id="totalProjects">-</div><div class="stat-label">总项目数</div></div>
@@ -118,88 +111,128 @@
       </div>
       <div class="grid" id="projectList"><div class="loading">加载中...</div></div>
     </div>
+  </div>
 
-    <!-- 新建项目弹窗 -->
-    <div class="modal" id="projectModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 id="modalTitle">新建项目</h2>
-          <button class="modal-close" onclick="hideModal()">×</button>
+  <!-- 项目表单弹窗 -->
+  <div class="modal" id="projectModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">新建项目</h2>
+        <button class="modal-close" onclick="hideModal()">×</button>
+      </div>
+      <form id="projectForm" onsubmit="saveProject(event)">
+        <input type="hidden" id="projectId">
+        <div class="form-group">
+          <label>项目名称 *</label>
+          <input type="text" id="projectName" required>
         </div>
-        <form id="projectForm" onsubmit="saveProject(event)">
-          <input type="hidden" id="projectId">
-          <div class="form-group">
-            <label>项目名称 *</label>
-            <input type="text" id="projectName" required>
-          </div>
-          <div class="form-group">
-            <label>项目地址</label>
-            <input type="text" id="projectAddress">
-          </div>
-          <div class="form-group">
-            <label>预算 (元)</label>
-            <input type="number" id="projectBudget">
-          </div>
-          <div class="form-group">
-            <label>项目类型</label>
-            <select id="projectType">
-              <option value="">请选择</option>
-              <option value="房建">房建</option>
-              <option value="市政">市政</option>
-              <option value="装饰装修">装饰装修</option>
-              <option value="智能化">智能化</option>
-              <option value="其他">其他</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>实施方式</label>
-            <select id="implementType">
-              <option value="">请选择</option>
-              <option value="工程总承包（EPC）">工程总承包（EPC）</option>
-              <option value="平行发包">平行发包</option>
-              <option value="施工总承包">施工总承包</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>状态</label>
-            <select id="projectStatus">
-              <option value="在研">在研</option>
-              <option value="设计深化中">设计深化中</option>
-              <option value="招标中">招标中</option>
-              <option value="方案设计中">方案设计中</option>
-              <option value="施工中">施工中</option>
-              <option value="已完成">已完成</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>风险等级</label>
-            <select id="riskLevel">
-              <option value="低">低</option>
-              <option value="中">中</option>
-              <option value="高">高</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>计划完工日期</label>
-            <input type="date" id="plannedEndDate">
-          </div>
-          <div class="form-group">
-            <label>备注</label>
-            <input type="text" id="projectRemarks">
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn" onclick="hideModal()">取消</button>
-            <button type="submit" class="btn btn-primary">保存</button>
-          </div>
-        </form>
+        <div class="form-group">
+          <label>项目地址</label>
+          <input type="text" id="projectAddress">
+        </div>
+        <div class="form-group">
+          <label>预算 (元)</label>
+          <input type="number" id="projectBudget">
+        </div>
+        <div class="form-group">
+          <label>项目类型</label>
+          <input type="text" id="projectType" placeholder="如：房建、市政、智能化">
+        </div>
+        <div class="form-group">
+          <label>实施方式</label>
+          <input type="text" id="implementType" placeholder="如：EPC、平行发包">
+        </div>
+        <div class="form-group">
+          <label>状态</label>
+          <select id="projectStatus"></select>
+        </div>
+        <div class="form-group">
+          <label>风险等级</label>
+          <select id="riskLevel">
+            <option value="低">低</option>
+            <option value="中">中</option>
+            <option value="高">高</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>计划完工日期</label>
+          <input type="date" id="plannedEndDate">
+        </div>
+        <div class="form-group">
+          <label>备注</label>
+          <input type="text" id="projectRemarks">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn" onclick="hideModal()">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 配置弹窗 -->
+  <div class="modal" id="configModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚙️ 系统配置</h2>
+        <button class="modal-close" onclick="hideConfigModal()">×</button>
+      </div>
+      
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchConfigTab('status')">项目状态</button>
+        <button class="tab-btn" onclick="switchConfigTab('risk')">风险等级</button>
+        <button class="tab-btn" onclick="switchConfigTab('type')">项目类型</button>
+      </div>
+      
+      <div id="config-status" class="config-section">
+        <h3>项目状态选项</h3>
+        <p style="font-size:12px;color:#666;margin-bottom:12px;">设置项目可以有哪些状态选项</p>
+        <div id="statusList"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="addConfigItem('status')">+ 添加状态</button>
+      </div>
+      
+      <div id="config-risk" class="config-section" style="display:none;">
+        <h3>风险等级选项</h3>
+        <div id="riskList"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="addConfigItem('risk')">+ 添加等级</button>
+      </div>
+      
+      <div id="config-type" class="config-section" style="display:none;">
+        <h3>项目类型选项</h3>
+        <div id="typeList"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="addConfigItem('type')">+ 添加类型</button>
+      </div>
+      
+      <div class="form-actions">
+        <button class="btn" onclick="hideConfigModal()">取消</button>
+        <button class="btn btn-success" onclick="saveConfig()">保存配置</button>
       </div>
     </div>
   </div>
 
   <script>
     // ========== 登录配置 ==========
-    // 密码: admin123 (可以修改)
     const CORRECT_PASSWORD = 'admin123';
+    
+    // ========== 默认配置 ==========
+    const DEFAULT_CONFIG = {
+      status: ['在研', '设计深化中', '招标中', '方案设计中', '施工中', '已完成'],
+      risk: ['低', '中', '高'],
+      type: ['房建', '市政', '装饰装修', '智能化', '其他']
+    };
+    
+    // ========== 加载配置 ==========
+    function loadConfig() {
+      const saved = localStorage.getItem('pm_config');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+      return { ...DEFAULT_CONFIG };
+    }
+    
+    function saveConfigToStorage(config) {
+      localStorage.setItem('pm_config', JSON.stringify(config));
+    }
     
     // ========== 检查登录状态 ==========
     function checkLogin() {
@@ -208,6 +241,7 @@
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('appContent').classList.add('active');
         loadProjects();
+        initConfig();
       }
     }
     
@@ -222,6 +256,7 @@
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('appContent').classList.add('active');
         loadProjects();
+        initConfig();
       } else {
         errorDiv.textContent = '密码错误，请重试';
         errorDiv.style.display = 'block';
@@ -238,24 +273,77 @@
       document.getElementById('loginError').style.display = 'none';
     }
 
+    // ========== 配置功能 ==========
+    let currentConfig = loadConfig();
+    
+    function initConfig() {
+      renderConfigItems('status');
+      renderConfigItems('risk');
+      renderConfigItems('type');
+      updateStatusSelect();
+    }
+    
+    function renderConfigItems(type) {
+      const container = document.getElementById(type + 'List');
+      const items = currentConfig[type] || [];
+      container.innerHTML = items.map((item, idx) => `
+        <div class="config-item">
+          <input type="text" value="${item}" onchange="updateConfigItem('${type}', ${idx}, this.value)">
+          <button class="remove-btn" onclick="removeConfigItem('${type}', ${idx})">删除</button>
+        </div>
+      `).join('');
+    }
+    
+    function updateConfigItem(type, idx, value) {
+      currentConfig[type][idx] = value;
+    }
+    
+    function addConfigItem(type) {
+      currentConfig[type].push('新选项');
+      renderConfigItems(type);
+    }
+    
+    function removeConfigItem(type, idx) {
+      currentConfig[type].splice(idx, 1);
+      renderConfigItems(type);
+    }
+    
+    function switchConfigTab(tab) {
+      document.querySelectorAll('.config-section').forEach(el => el.style.display = 'none');
+      document.getElementById('config-' + tab).style.display = 'block';
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+    
+    function saveConfig() {
+      saveConfigToStorage(currentConfig);
+      updateStatusSelect();
+      showSuccess('配置已保存！');
+      hideConfigModal();
+    }
+    
+    function updateStatusSelect() {
+      const select = document.getElementById('projectStatus');
+      select.innerHTML = currentConfig.status.map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+    
+    window.showConfigModal = function() {
+      document.getElementById('configModal').classList.add('active');
+    };
+    
+    window.hideConfigModal = function() {
+      document.getElementById('configModal').classList.remove('active');
+    };
+
     // ========== Supabase 配置 ==========
     const SUPABASE_URL = 'https://ymrhorxtglbsoccpxnwv.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltcmhvcnh0Z2xic29jY3B4bnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTgxNjUsImV4cCI6MjA4OTc5NDE2NX0.wav36aWORPcWOhX33ga73puQf3b3ofxHbXD2vB6myoA';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltcmhvcnh0Z2xic29jY3B4bnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTgxNjUsImV4cCI6MjA4OTc5NDE2NX0.wav36aWORPcWOhX33ga73puQf3b3ofxHbXD2vBmyoA';
     
     const headers = {
       'apikey': SUPABASE_KEY,
       'Authorization': 'Bearer ' + SUPABASE_KEY,
       'Content-Type': 'application/json',
       'Prefer': 'return=representation'
-    };
-
-    const statusColors = {
-      '在研': 'badge-blue',
-      '设计深化中': 'badge-purple',
-      '招标中': 'badge-yellow',
-      '方案设计中': 'badge-green',
-      '施工中': 'badge-green',
-      '已完成': 'badge-gray',
     };
 
     const riskColors = {'高':'#DC2626','中':'#F59E0B','低':'#10B981'};
@@ -267,9 +355,7 @@
         
         const response = await fetch(SUPABASE_URL + '/rest/v1/projects?select=*&order=created_at.desc', { headers });
         
-        if (!response.ok) {
-          throw new Error('请求失败: ' + response.status);
-        }
+        if (!response.ok) throw new Error('请求失败: ' + response.status);
         
         const projects = await response.json();
         
@@ -287,6 +373,9 @@
           document.getElementById('projectList').innerHTML = '<div class="loading">暂无项目，点击"新建项目"创建</div>';
           return;
         }
+        
+        const statusColors = {};
+        currentConfig.status.forEach((s, i) => statusColors[s] = ['badge-blue','badge-purple','badge-yellow','badge-green','badge-gray'][i % 5]);
         
         document.getElementById('projectList').innerHTML = projects.map(p => `
           <div class="card">
@@ -317,7 +406,6 @@
       } catch (err) {
         document.getElementById('errorMsg').innerHTML = '<div class="error">加载失败: ' + err.message + '</div>';
         document.getElementById('errorMsg').style.display = 'block';
-        document.getElementById('projectList').innerHTML = '<div class="loading">加载失败，请点击刷新重试</div>';
       }
     };
 
@@ -331,6 +419,12 @@
     window.hideModal = function() {
       document.getElementById('projectModal').classList.remove('active');
     };
+    
+    function showSuccess(msg) {
+      document.getElementById('successMsg').textContent = msg;
+      document.getElementById('successMsg').style.display = 'block';
+      setTimeout(() => document.getElementById('successMsg').style.display = 'none', 3000);
+    }
 
     window.editProject = async function(id) {
       const response = await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + id, { headers });
@@ -343,7 +437,7 @@
         document.getElementById('projectBudget').value = p.budget || '';
         document.getElementById('projectType').value = p.project_type || '';
         document.getElementById('implementType').value = p.implement_type || '';
-        document.getElementById('projectStatus').value = p.status || '在研';
+        document.getElementById('projectStatus').value = p.status || currentConfig.status[0];
         document.getElementById('riskLevel').value = p.risk_level || '低';
         document.getElementById('plannedEndDate').value = p.planned_end_date || '';
         document.getElementById('projectRemarks').value = p.remarks || '';
@@ -377,19 +471,13 @@
           method = 'PATCH';
         }
         
-        const response = await fetch(url, {
-          method: method,
-          headers: headers,
-          body: JSON.stringify(data)
-        });
+        const response = await fetch(url, { method: method, headers: headers, body: JSON.stringify(data) });
         
-        if (!response.ok) {
-          const err = await response.text();
-          throw new Error(err);
-        }
+        if (!response.ok) throw new Error('保存失败');
         
         hideModal();
         loadProjects();
+        showSuccess('项目保存成功！');
       } catch (err) {
         alert('保存失败: ' + err.message);
       }
@@ -399,16 +487,10 @@
       if (!confirm('确定要删除这个项目吗？')) return;
       
       try {
-        const response = await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + id, {
-          method: 'DELETE',
-          headers: headers
-        });
-        
-        if (!response.ok) {
-          throw new Error('删除失败');
-        }
-        
+        const response = await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + id, { method: 'DELETE', headers: headers });
+        if (!response.ok) throw new Error('删除失败');
         loadProjects();
+        showSuccess('项目已删除');
       } catch (err) {
         alert('删除失败: ' + err.message);
       }
