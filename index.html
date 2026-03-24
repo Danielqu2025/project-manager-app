@@ -27,7 +27,7 @@
     .badge-green { background: #10B981; }
     .badge-gray { background: #6B7280; }
     .progress-bar { background: #e0e0e0; border-radius: 4px; height: 8px; margin: 12px 0; }
-    .progress-fill { background: #1976d2; border-radius: 4px; height: 100%; transition: width 0.3s; }
+    .progress-fill { background: #1976d2; border-radius: 4px; height: 100%; }
     .info-row { display: flex; justify-content: space-between; margin-top: 12px; font-size: 14px; color: #666; }
     .risk-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: white; margin-top: 12px; }
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
@@ -40,32 +40,26 @@
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; margin-bottom: 4px; font-weight: 500; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-    .form-group textarea { min-height: 80px; resize: vertical; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
     .modal.active { display: flex; }
     .modal-content { background: white; padding: 24px; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
     .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
-    
-    /* 登录页面样式 */
     .login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
     .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 360px; text-align: center; }
-    .login-box h1 { font-size: 24px; margin-bottom: 8px; color: #333; }
+    .login-box h1 { font-size: 24px; margin-bottom: 8px; }
     .login-box p { color: #666; margin-bottom: 24px; }
-    .login-box input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; margin-bottom: 16px; transition: border-color 0.3s; }
+    .login-box input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; margin-bottom: 16px; }
     .login-box input:focus { outline: none; border-color: #667eea; }
     .login-box .btn { width: 100%; padding: 12px; font-size: 16px; }
     .login-box .error { text-align: left; margin-bottom: 12px; }
     .login-logo { font-size: 48px; margin-bottom: 16px; }
-    
     .app-content { display: none; }
     .app-content.active { display: block; }
-    
     .tab-buttons { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
     .tab-btn { padding: 8px 16px; border: none; background: none; cursor: pointer; font-size: 14px; color: #666; border-radius: 6px; }
     .tab-btn.active { background: #e0e0e0; color: #333; font-weight: 500; }
-    
     .config-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 16px; }
     .config-section h3 { margin-bottom: 12px; font-size: 16px; }
     .config-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -99,10 +93,8 @@
           <button class="btn btn-danger" onclick="logout()">退出</button>
         </div>
       </div>
-      
       <div id="errorMsg" style="display:none;"></div>
       <div id="successMsg" style="display:none;"></div>
-      
       <div class="stats">
         <div class="stat-card"><div class="stat-num" id="totalProjects">-</div><div class="stat-label">总项目数</div></div>
         <div class="stat-card"><div class="stat-num" id="totalBudget">-</div><div class="stat-label">总预算(万)</div></div>
@@ -122,46 +114,15 @@
       </div>
       <form id="projectForm" onsubmit="saveProject(event)">
         <input type="hidden" id="projectId">
-        <div class="form-group">
-          <label>项目名称 *</label>
-          <input type="text" id="projectName" required>
-        </div>
-        <div class="form-group">
-          <label>项目地址</label>
-          <input type="text" id="projectAddress">
-        </div>
-        <div class="form-group">
-          <label>预算 (元)</label>
-          <input type="number" id="projectBudget">
-        </div>
-        <div class="form-group">
-          <label>项目类型</label>
-          <input type="text" id="projectType" placeholder="如：房建、市政、智能化">
-        </div>
-        <div class="form-group">
-          <label>实施方式</label>
-          <input type="text" id="implementType" placeholder="如：EPC、平行发包">
-        </div>
-        <div class="form-group">
-          <label>状态</label>
-          <select id="projectStatus"></select>
-        </div>
-        <div class="form-group">
-          <label>风险等级</label>
-          <select id="riskLevel">
-            <option value="低">低</option>
-            <option value="中">中</option>
-            <option value="高">高</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>计划完工日期</label>
-          <input type="date" id="plannedEndDate">
-        </div>
-        <div class="form-group">
-          <label>备注</label>
-          <input type="text" id="projectRemarks">
-        </div>
+        <div class="form-group"><label>项目名称 *</label><input type="text" id="projectName" required></div>
+        <div class="form-group"><label>项目地址</label><input type="text" id="projectAddress"></div>
+        <div class="form-group"><label>预算 (元)</label><input type="number" id="projectBudget"></div>
+        <div class="form-group"><label>项目类型</label><select id="projectType"></select></div>
+        <div class="form-group"><label>实施方式</label><input type="text" id="implementType" placeholder="如：EPC、平行发包"></div>
+        <div class="form-group"><label>状态</label><select id="projectStatus"></select></div>
+        <div class="form-group"><label>风险等级</label><select id="riskLevel"></select></div>
+        <div class="form-group"><label>计划完工日期</label><input type="date" id="plannedEndDate"></div>
+        <div class="form-group"><label>备注</label><input type="text" id="projectRemarks"></div>
         <div class="form-actions">
           <button type="button" class="btn" onclick="hideModal()">取消</button>
           <button type="submit" class="btn btn-primary">保存</button>
@@ -177,110 +138,98 @@
         <h2>⚙️ 系统配置</h2>
         <button class="modal-close" onclick="hideConfigModal()">×</button>
       </div>
-      
       <div class="tab-buttons">
         <button class="tab-btn active" onclick="switchConfigTab('status')">项目状态</button>
         <button class="tab-btn" onclick="switchConfigTab('risk')">风险等级</button>
         <button class="tab-btn" onclick="switchConfigTab('type')">项目类型</button>
       </div>
-      
       <div id="config-status" class="config-section">
-        <h3>项目状态选项</h3>
-        <p style="font-size:12px;color:#666;margin-bottom:12px;">设置项目可以有哪些状态选项</p>
+        <h3>项目状态选项</h3><p style="font-size:12px;color:#666;margin-bottom:12px;">从数据库加载，保存后所有人可见</p>
         <div id="statusList"></div>
         <button class="btn btn-primary" style="margin-top:12px;" onclick="addConfigItem('status')">+ 添加状态</button>
       </div>
-      
       <div id="config-risk" class="config-section" style="display:none;">
-        <h3>风险等级选项</h3>
-        <div id="riskList"></div>
+        <h3>风险等级选项</h3><div id="riskList"></div>
         <button class="btn btn-primary" style="margin-top:12px;" onclick="addConfigItem('risk')">+ 添加等级</button>
       </div>
-      
       <div id="config-type" class="config-section" style="display:none;">
-        <h3>项目类型选项</h3>
-        <div id="typeList"></div>
+        <h3>项目类型选项</h3><div id="typeList"></div>
         <button class="btn btn-primary" style="margin-top:12px;" onclick="addConfigItem('type')">+ 添加类型</button>
       </div>
-      
       <div class="form-actions">
         <button class="btn" onclick="hideConfigModal()">取消</button>
-        <button class="btn btn-success" onclick="saveConfig()">保存配置</button>
+        <button class="btn btn-success" onclick="saveConfig()">保存到数据库</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ========== 登录配置 ==========
     const CORRECT_PASSWORD = 'admin123';
     
-    // ========== 默认配置 ==========
-    const DEFAULT_CONFIG = {
-      status: ['在研', '设计深化中', '招标中', '方案设计中', '施工中', '已完成'],
-      risk: ['低', '中', '高'],
-      type: ['房建', '市政', '装饰装修', '智能化', '其他']
-    };
+    const SUPABASE_URL = 'https://ymrhorxtglbsoccpxnwv.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltcmhvcnh0Z2xic29jY3B4bnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTgxNjUsImV4cCI6MjA4OTc5NDE2NX0.wav36aWORPcWOhX33ga73puQf3b3ofxHbXD2vB6myoA';
+    const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+    const riskColors = {'高':'#DC2626','中':'#F59E0B','低':'#10B981'};
     
-    // ========== 加载配置 ==========
-    function loadConfig() {
-      const saved = localStorage.getItem('pm_config');
-      if (saved) {
-        return JSON.parse(saved);
+    let currentConfig = { status: [], risk: [], type: [] };
+    
+    // 从数据库加载配置
+    async function loadConfigFromDB() {
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/app_config?select=config_key,config_value', { headers });
+        const data = await res.json();
+        data.forEach(item => {
+          currentConfig[item.config_key] = item.config_value;
+        });
+      } catch (e) {
+        console.error('加载配置失败', e);
       }
-      return { ...DEFAULT_CONFIG };
     }
     
-    function saveConfigToStorage(config) {
-      localStorage.setItem('pm_config', JSON.stringify(config));
+    // 保存配置到数据库
+    async function saveConfigToDB(config) {
+      for (const [key, value] of Object.entries(config)) {
+        await fetch(SUPABASE_URL + '/rest/v1/app_config?config_key=eq.' + key, {
+          method: 'PATCH',
+          headers: { ...headers, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ config_value: value, updated_at: new Date().toISOString() })
+        });
+      }
     }
     
-    // ========== 检查登录状态 ==========
     function checkLogin() {
-      const isLoggedIn = localStorage.getItem('pm_logged_in');
-      if (isLoggedIn === 'true') {
+      if (localStorage.getItem('pm_logged_in') === 'true') {
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('appContent').classList.add('active');
         loadProjects();
-        initConfig();
+        loadConfigFromDB().then(() => { initConfig(); updateSelects(); });
       }
     }
     
-    // ========== 登录 ==========
     function doLogin(e) {
       e.preventDefault();
-      const password = document.getElementById('password').value;
-      const errorDiv = document.getElementById('loginError');
-      
-      if (password === CORRECT_PASSWORD) {
+      const pwd = document.getElementById('password').value;
+      if (pwd === CORRECT_PASSWORD) {
         localStorage.setItem('pm_logged_in', 'true');
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('appContent').classList.add('active');
         loadProjects();
-        initConfig();
+        loadConfigFromDB().then(() => { initConfig(); updateSelects(); });
       } else {
-        errorDiv.textContent = '密码错误，请重试';
-        errorDiv.style.display = 'block';
-        document.getElementById('password').value = '';
+        document.getElementById('loginError').textContent = '密码错误';
+        document.getElementById('loginError').style.display = 'block';
       }
     }
     
-    // ========== 退出登录 ==========
     function logout() {
       localStorage.removeItem('pm_logged_in');
-      document.getElementById('appContent').classList.remove('active');
-      document.getElementById('loginPage').style.display = 'flex';
-      document.getElementById('password').value = '';
-      document.getElementById('loginError').style.display = 'none';
+      location.reload();
     }
-
-    // ========== 配置功能 ==========
-    let currentConfig = loadConfig();
     
     function initConfig() {
       renderConfigItems('status');
       renderConfigItems('risk');
       renderConfigItems('type');
-      updateStatusSelect();
     }
     
     function renderConfigItems(type) {
@@ -294,19 +243,9 @@
       `).join('');
     }
     
-    function updateConfigItem(type, idx, value) {
-      currentConfig[type][idx] = value;
-    }
-    
-    function addConfigItem(type) {
-      currentConfig[type].push('新选项');
-      renderConfigItems(type);
-    }
-    
-    function removeConfigItem(type, idx) {
-      currentConfig[type].splice(idx, 1);
-      renderConfigItems(type);
-    }
+    function updateConfigItem(type, idx, value) { currentConfig[type][idx] = value; }
+    function addConfigItem(type) { currentConfig[type].push('新选项'); renderConfigItems(type); }
+    function removeConfigItem(type, idx) { currentConfig[type].splice(idx, 1); renderConfigItems(type); }
     
     function switchConfigTab(tab) {
       document.querySelectorAll('.config-section').forEach(el => el.style.display = 'none');
@@ -315,120 +254,59 @@
       event.target.classList.add('active');
     }
     
-    function saveConfig() {
-      saveConfigToStorage(currentConfig);
-      updateStatusSelect();
-      showSuccess('配置已保存！');
+    async function saveConfig() {
+      await saveConfigToDB(currentConfig);
+      updateSelects();
+      showSuccess('配置已保存到数据库！');
       hideConfigModal();
     }
     
-    function updateStatusSelect() {
-      const select = document.getElementById('projectStatus');
-      select.innerHTML = currentConfig.status.map(s => `<option value="${s}">${s}</option>`).join('');
+    function updateSelects() {
+      document.getElementById('projectStatus').innerHTML = currentConfig.status.map(s => `<option value="${s}">${s}</option>`).join('');
+      document.getElementById('projectType').innerHTML = '<option value="">请选择</option>' + currentConfig.type.map(t => `<option value="${t}">${t}</option>`).join('');
+      document.getElementById('riskLevel').innerHTML = currentConfig.risk.map(r => `<option value="${r}">${r}</option>`).join('');
     }
     
-    window.showConfigModal = function() {
-      document.getElementById('configModal').classList.add('active');
-    };
-    
-    window.hideConfigModal = function() {
-      document.getElementById('configModal').classList.remove('active');
-    };
-
-    // ========== Supabase 配置 ==========
-    const SUPABASE_URL = 'https://ymrhorxtglbsoccpxnwv.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltcmhvcnh0Z2xic29jY3B4bnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTgxNjUsImV4cCI6MjA4OTc5NDE2NX0.wav36aWORPcWOhX33ga73puQf3b3ofxHbXD2vBmyoA';
-    
-    const headers = {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    };
-
-    const riskColors = {'高':'#DC2626','中':'#F59E0B','低':'#10B981'};
+    window.showModal = function() { document.getElementById('projectForm').reset(); document.getElementById('projectId').value = ''; document.getElementById('modalTitle').textContent = '新建项目'; document.getElementById('projectModal').classList.add('active'); };
+    window.hideModal = function() { document.getElementById('projectModal').classList.remove('active'); };
+    window.showConfigModal = function() { document.getElementById('configModal').classList.add('active'); };
+    window.hideConfigModal = function() { document.getElementById('configModal').classList.remove('active'); };
+    function showSuccess(msg) { document.getElementById('successMsg').textContent = msg; document.getElementById('successMsg').style.display = 'block'; setTimeout(() => document.getElementById('successMsg').style.display = 'none', 3000); }
 
     window.loadProjects = async function() {
       try {
         document.getElementById('projectList').innerHTML = '<div class="loading">加载中...</div>';
-        document.getElementById('errorMsg').style.display = 'none';
-        
-        const response = await fetch(SUPABASE_URL + '/rest/v1/projects?select=*&order=created_at.desc', { headers });
-        
-        if (!response.ok) throw new Error('请求失败: ' + response.status);
-        
-        const projects = await response.json();
-        
-        const total = projects?.length || 0;
-        const budget = (projects?.reduce((s,p) => s+(p.budget||0),0)||0)/10000;
-        const progress = projects?.reduce((s,p)=>s+(p.progress||0),0)/(total||1)||0;
-        const highRisk = projects?.filter(p=>p.risk_level==='高').length||0;
-        
+        const res = await fetch(SUPABASE_URL + '/rest/v1/projects?select=*&order=created_at.desc', { headers });
+        const projects = await res.json();
+        const total = projects?.length || 0, budget = (projects?.reduce((s,p) => s+(p.budget||0),0)||0)/10000, progress = projects?.reduce((s,p)=>s+(p.progress||0),0)/(total||1)||0, highRisk = projects?.filter(p=>p.risk_level==='高').length||0;
         document.getElementById('totalProjects').textContent = total;
         document.getElementById('totalBudget').textContent = Math.round(budget);
         document.getElementById('avgProgress').textContent = Math.round(progress)+'%';
         document.getElementById('highRisk').textContent = highRisk;
         
-        if(!projects || !projects.length){
-          document.getElementById('projectList').innerHTML = '<div class="loading">暂无项目，点击"新建项目"创建</div>';
-          return;
-        }
+        if (!projects || !projects.length) { document.getElementById('projectList').innerHTML = '<div class="loading">暂无项目</div>'; return; }
         
-        const statusColors = {};
-        currentConfig.status.forEach((s, i) => statusColors[s] = ['badge-blue','badge-purple','badge-yellow','badge-green','badge-gray'][i % 5]);
+        const statusColors = {}; currentConfig.status.forEach((s, i) => statusColors[s] = ['badge-blue','badge-purple','badge-yellow','badge-green','badge-gray'][i % 5]);
         
         document.getElementById('projectList').innerHTML = projects.map(p => `
           <div class="card">
-            <div class="card-header">
-              <div class="card-title">${p.name}</div>
-              <span class="badge ${statusColors[p.status]||'badge-gray'}">${p.status||'待定'}</span>
-            </div>
+            <div class="card-header"><div class="card-title">${p.name}</div><span class="badge ${statusColors[p.status]||'badge-gray'}">${p.status||'待定'}</span></div>
             <div style="color:#666;font-size:14px;margin-bottom:12px;">📍 ${p.address||'地址待定'}</div>
-            <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                <span style="font-size:14px;">进度</span>
-                <span style="font-size:14px;font-weight:600;">${p.progress||0}%</span>
-              </div>
-              <div class="progress-bar"><div class="progress-fill" style="width:${p.progress||0}%"></div></div>
-            </div>
-            <div class="info-row">
-              <span>💰 预算: ¥${(p.budget||0).toLocaleString()}</span>
-              <span>📅 完工: ${p.planned_end_date||'待定'}</span>
-            </div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span>进度</span><span style="font-weight:600;">${p.progress||0}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p.progress||0}%"></div></div></div>
+            <div class="info-row"><span>💰 ¥${(p.budget||0).toLocaleString()}</span><span>📅 ${p.planned_end_date||'待定'}</span></div>
             <div style="display:flex;gap:8px;margin-top:12px;">
-              <div class="risk-badge" style="background:${riskColors[p.risk_level]||riskColors['低']}">风险: ${p.risk_level||'低'}</div>
+              <div class="risk-badge" style="background:${riskColors[p.risk_level]||'#10B981'}">${p.risk_level||'低'}</div>
               <button class="btn" style="padding:4px 8px;font-size:12px;" onclick="editProject('${p.id}')">编辑</button>
               <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="deleteProject('${p.id}')">删除</button>
             </div>
           </div>
         `).join('');
-        
-      } catch (err) {
-        document.getElementById('errorMsg').innerHTML = '<div class="error">加载失败: ' + err.message + '</div>';
-        document.getElementById('errorMsg').style.display = 'block';
-      }
+      } catch (err) { document.getElementById('errorMsg').innerHTML = '<div class="error">'+err.message+'</div>'; document.getElementById('errorMsg').style.display = 'block'; }
     };
-
-    window.showModal = function() {
-      document.getElementById('projectForm').reset();
-      document.getElementById('projectId').value = '';
-      document.getElementById('modalTitle').textContent = '新建项目';
-      document.getElementById('projectModal').classList.add('active');
-    };
-
-    window.hideModal = function() {
-      document.getElementById('projectModal').classList.remove('active');
-    };
-    
-    function showSuccess(msg) {
-      document.getElementById('successMsg').textContent = msg;
-      document.getElementById('successMsg').style.display = 'block';
-      setTimeout(() => document.getElementById('successMsg').style.display = 'none', 3000);
-    }
 
     window.editProject = async function(id) {
-      const response = await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + id, { headers });
-      const projects = await response.json();
+      const res = await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + id, { headers });
+      const projects = await res.json();
       if (projects && projects[0]) {
         const p = projects[0];
         document.getElementById('projectId').value = p.id;
@@ -438,7 +316,7 @@
         document.getElementById('projectType').value = p.project_type || '';
         document.getElementById('implementType').value = p.implement_type || '';
         document.getElementById('projectStatus').value = p.status || currentConfig.status[0];
-        document.getElementById('riskLevel').value = p.risk_level || '低';
+        document.getElementById('riskLevel').value = p.risk_level || currentConfig.risk[0];
         document.getElementById('plannedEndDate').value = p.planned_end_date || '';
         document.getElementById('projectRemarks').value = p.remarks || '';
         document.getElementById('modalTitle').textContent = '编辑项目';
@@ -450,53 +328,24 @@
       e.preventDefault();
       const id = document.getElementById('projectId').value;
       const data = {
-        name: document.getElementById('projectName').value,
-        address: document.getElementById('projectAddress').value,
-        budget: parseFloat(document.getElementById('projectBudget').value) || null,
-        project_type: document.getElementById('projectType').value || null,
-        implement_type: document.getElementById('implementType').value || null,
-        status: document.getElementById('projectStatus').value,
-        risk_level: document.getElementById('riskLevel').value,
-        planned_end_date: document.getElementById('plannedEndDate').value || null,
-        remarks: document.getElementById('projectRemarks').value || null,
-        updated_at: new Date().toISOString()
+        name: document.getElementById('projectName').value, address: document.getElementById('projectAddress').value,
+        budget: parseFloat(document.getElementById('projectBudget').value) || null, project_type: document.getElementById('projectType').value || null,
+        implement_type: document.getElementById('implementType').value || null, status: document.getElementById('projectStatus').value,
+        risk_level: document.getElementById('riskLevel').value, planned_end_date: document.getElementById('plannedEndDate').value || null,
+        remarks: document.getElementById('projectRemarks').value || null, updated_at: new Date().toISOString()
       };
-
-      try {
-        let url = SUPABASE_URL + '/rest/v1/projects';
-        let method = 'POST';
-        
-        if (id) {
-          url += '?id=eq.' + id;
-          method = 'PATCH';
-        }
-        
-        const response = await fetch(url, { method: method, headers: headers, body: JSON.stringify(data) });
-        
-        if (!response.ok) throw new Error('保存失败');
-        
-        hideModal();
-        loadProjects();
-        showSuccess('项目保存成功！');
-      } catch (err) {
-        alert('保存失败: ' + err.message);
-      }
+      let url = SUPABASE_URL + '/rest/v1/projects', method = 'POST';
+      if (id) { url += '?id=eq.' + id; method = 'PATCH'; }
+      await fetch(url, { method, headers, body: JSON.stringify(data) });
+      hideModal(); loadProjects(); showSuccess('保存成功！');
     };
 
     window.deleteProject = async function(id) {
-      if (!confirm('确定要删除这个项目吗？')) return;
-      
-      try {
-        const response = await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + id, { method: 'DELETE', headers: headers });
-        if (!response.ok) throw new Error('删除失败');
-        loadProjects();
-        showSuccess('项目已删除');
-      } catch (err) {
-        alert('删除失败: ' + err.message);
-      }
+      if (!confirm('确定删除？')) return;
+      await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + id, { method: 'DELETE', headers });
+      loadProjects(); showSuccess('已删除');
     };
 
-    // 初始化
     checkLogin();
   </script>
 </body>
